@@ -1,4 +1,4 @@
-name: 'Watchtower Update'
+name: 'Watchtower Update (POST)'
 description: 'Automate your Docker image deployments on GitHub Actions via Watchtower'
 author: 'darnfish'
 branding:
