@@ -1,22 +1,52 @@
 name: 'Watchtower Update (POST)'
-description: 'Automate your Docker image deployments on GitHub Actions via Watchtower'
-author: 'darnfish'
+description: 'Trigger Docker container updates via Watchtower HTTP API'
+author: 'bludesign'
 branding:
   icon: 'arrow-down-circle'
   color: 'blue'
 inputs:
   url:
     required: true
-    description: 'The URL of your Watchtower HTTP endpoint'
+    description: 'Watchtower URL (base URL or full /v1/update endpoint). The /v1/update path is appended automatically if missing.'
   api_token:
     required: true
-    description: 'The API token of your Watchtower HTTP endpoint'
+    description: 'Bearer token for Watchtower HTTP API authentication'
   images:
     required: false
-    description: "A list of Docker images that you want to update"
+    description: 'Comma-separated list of Docker images to update (e.g. "myrepo/app,myrepo/worker"). Omit to update all monitored containers.'
+  containers:
+    required: false
+    description: 'Alias for images — comma-separated list of Docker images to target for update'
   headers:
     required: false
-    description: "Additional HTTP headers to be sent alongside the request"
+    description: 'Additional HTTP headers as a JSON object (e.g. {"CF-Access-Client-Id":"..."})'
+  timeout:
+    required: false
+    default: '30'
+    description: 'Request timeout in seconds'
+  retry_count:
+    required: false
+    default: '0'
+    description: 'Number of retries on failure (429, 5xx, or network errors)'
+  retry_delay:
+    required: false
+    default: '10'
+    description: 'Seconds to wait between retries (429 responses use the Retry-After header instead)'
+  fail_on_error:
+    required: false
+    default: 'true'
+    description: 'Set to false to emit a warning instead of failing the action on errors'
+outputs:
+  status_code:
+    description: 'HTTP status code from the Watchtower response'
+  response:
+    description: 'Full JSON response body from Watchtower'
+  scanned:
+    description: 'Number of containers scanned for updates'
+  updated:
+    description: 'Number of containers that were updated'
+  failed:
+    description: 'Number of containers where the update failed'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
